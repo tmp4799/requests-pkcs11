@@ -1,0 +1,15 @@
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
+
+# Rust
+/target
+
+# Python
+__pycache__/
+
+# devcontainer test harness output (tokens, generated certs)
+.devcontainer/test-harness/

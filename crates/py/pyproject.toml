@@ -1,0 +1,15 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "requests-pkcs11"
+version = "0.1.0"
+description = "HTTPS requests authenticated by an mTLS client cert held on a PKCS#11 token"
+requires-python = ">=3.9"
+classifiers = ["Programming Language :: Rust"]
+
+[tool.maturin]
+# This crate (crates/py) is the Python extension; the workspace root is one level up.
+manifest-path = "Cargo.toml"
+module-name = "requests_pkcs11"

@@ -1,0 +1,12 @@
+{
+  "name": "requests-pkcs11",
+  "build": { "dockerfile": "Dockerfile" },
+  "remoteEnv": {
+    "SOFTHSM2_CONF": "${containerWorkspaceFolder}/.devcontainer/test-harness/softhsm2.conf"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["rust-lang.rust-analyzer"]
+    }
+  }
+}
