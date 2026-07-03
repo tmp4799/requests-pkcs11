@@ -40,7 +40,7 @@ fn main() -> Result<()> {
 
     match (args.url, args.ca) {
         (Some(url), Some(ca)) => {
-            let resp = client::get(id, &url, &ca)?;
+            let resp = client::request(id, "GET", &url, &[], None, &ca)?;
             println!("GET {url} -> HTTP {}", resp.status);
             println!("body: {} bytes", resp.body.len());
         }

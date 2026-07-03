@@ -15,21 +15,54 @@ use crate::signer::Pkcs11ClientCertResolver;
 /// A minimal HTTP response.
 pub struct Response {
     pub status: u16,
+    pub headers: Vec<(String, String)>,
     pub body: Vec<u8>,
 }
 
-/// Perform a GET against `url`, presenting `identity` for mTLS. `root_pem` is a
-/// PEM bundle of trust anchors for the server (the test server's self-signed
-/// cert; in production, the internal CA).
-pub fn get(identity: Identity, url: &str, root_pem: &Path) -> Result<Response> {
+/// Perform an HTTP request against `url`, presenting `identity` for mTLS.
+/// `root_pem` is a PEM bundle of trust anchors for the server (the test
+/// server's CA; in production, the internal CA).
+pub fn request(
+    identity: Identity,
+    method: &str,
+    url: &str,
+    headers: &[(String, String)],
+    body: Option<Vec<u8>>,
+    root_pem: &Path,
+) -> Result<Response> {
     let tls = client_config(identity, root_pem)?;
     let client = reqwest::blocking::Client::builder()
         .use_preconfigured_tls(tls)
         .build()?;
-    let resp = client.get(url).send()?;
+
+    let method = reqwest::Method::from_bytes(method.as_bytes())
+        .with_context(|| format!("invalid HTTP method {method:?}"))?;
+    let mut req = client.request(method, url);
+    for (name, value) in headers {
+        req = req.header(name, value);
+    }
+    if let Some(body) = body {
+        req = req.body(body);
+    }
+
+    let resp = req.send()?;
     let status = resp.status().as_u16();
+    let headers = resp
+        .headers()
+        .iter()
+        .map(|(k, v)| {
+            (
+                k.as_str().to_string(),
+                String::from_utf8_lossy(v.as_bytes()).into_owned(),
+            )
+        })
+        .collect();
     let body = resp.bytes()?.to_vec();
-    Ok(Response { status, body })
+    Ok(Response {
+        status,
+        headers,
+        body,
+    })
 }
 
 fn client_config(identity: Identity, root_pem: &Path) -> Result<rustls::ClientConfig> {

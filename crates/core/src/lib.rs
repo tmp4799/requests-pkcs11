@@ -8,8 +8,3 @@
 pub mod client;
 pub mod pkcs11;
 pub mod signer;
-
-/// Placeholder so the PyO3 crate still builds until its real API lands (l39).
-pub fn placeholder() -> &'static str {
-    "requests-pkcs11-core: scaffold"
-}

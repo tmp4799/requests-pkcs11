@@ -1036,6 +1036,7 @@ dependencies = [
 name = "requests-pkcs11"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "pyo3",
  "requests-pkcs11-core",
 ]
