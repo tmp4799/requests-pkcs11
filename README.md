@@ -48,6 +48,23 @@ python3 -m venv /tmp/venv
 /tmp/venv/bin/python -c 'import requests_pkcs11; print(requests_pkcs11.request)'
 ```
 
+## Native build (production / real token)
+
+A real token's PKCS#11 module and its login agent (e.g. CSPid) live on the
+host, so the container build above cannot reach them — build natively on the
+machine where the agent runs. Prerequisites: a Rust toolchain
+(https://rustup.rs) and Python 3.9+.
+
+```bash
+python3 -m venv .venv && . .venv/bin/activate
+pip install maturin
+maturin develop --release -m crates/py/Cargo.toml   # builds + installs into the venv
+python -c 'import requests_pkcs11'
+```
+
+(Use maturin rather than plain `cargo build` — on macOS the PyO3 crate only
+links with the flags maturin supplies.)
+
 ## Test harness (SoftHSM token + local mTLS server)
 
 ```bash
